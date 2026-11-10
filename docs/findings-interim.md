@@ -19,7 +19,7 @@ Brier scores on 141 settled hourly/daily ladder snapshots (59 events), resampled
 
 | Forecaster | Brier | Δ vs. market (90% interval) |
 |---|---|---|
-| Market mid | 0.1594 | — |
+| Market mid | 0.1594 | baseline |
 | Large language model, blind | 0.1595 | +0.0000 (−0.006, +0.005) |
 | 80% market + 20% LLM | 0.1591 | −0.0003 (−0.002, +0.001) |
 | Volatility model alone | 0.1730 | +0.0136 (+0.001, +0.027) |
