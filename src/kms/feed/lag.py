@@ -9,8 +9,8 @@ from __future__ import annotations
 import math
 import time
 from collections import deque
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Deque, Optional
 
 
 class LagMonitor:
@@ -21,12 +21,12 @@ class LagMonitor:
     """
 
     def __init__(self, window: int = 400, max_age_s: float = 60.0, clock: Callable[[], float] = time.time):
-        self._samples: Deque[float] = deque(maxlen=window)
+        self._samples: deque[float] = deque(maxlen=window)
         self._last_sample_t: float = -math.inf
         self.max_age_s = max_age_s
         self._clock = clock
 
-    def observe(self, exchange_ts: float, received_ts: Optional[float] = None) -> None:
+    def observe(self, exchange_ts: float, received_ts: float | None = None) -> None:
         recv = self._clock() if received_ts is None else received_ts
         if not (math.isfinite(exchange_ts) and math.isfinite(recv)):
             return
@@ -38,18 +38,18 @@ class LagMonitor:
         self._samples.clear()
         self._last_sample_t = -math.inf
 
-    def percentile(self, q: float) -> Optional[float]:
+    def percentile(self, q: float) -> float | None:
         if not self._samples or self._clock() - self._last_sample_t > self.max_age_s:
             return None
         xs = sorted(self._samples)
         return xs[min(len(xs) - 1, int(q * len(xs)))]
 
     @property
-    def p50(self) -> Optional[float]:
+    def p50(self) -> float | None:
         return self.percentile(0.5)
 
     @property
-    def p90(self) -> Optional[float]:
+    def p90(self) -> float | None:
         return self.percentile(0.9)
 
 
@@ -67,8 +67,8 @@ class FreshnessGate:
         self.max_book_age_s = max_book_age_s
         self.max_signal_age_s = max_signal_age_s
 
-    def check(self, feed_lag_s: Optional[float], book_age_s: Optional[float],
-              signal_age_s: Optional[float] = 0.0) -> GateDecision:
+    def check(self, feed_lag_s: float | None, book_age_s: float | None,
+              signal_age_s: float | None = 0.0) -> GateDecision:
         for name, value, limit in (("feed lag", feed_lag_s, self.max_lag_s),
                                    ("book age", book_age_s, self.max_book_age_s),
                                    ("signal age", signal_age_s, self.max_signal_age_s)):

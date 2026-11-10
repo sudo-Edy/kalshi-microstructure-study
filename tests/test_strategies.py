@@ -2,7 +2,8 @@ import pytest
 
 from kms.simulator import OrderBook
 from kms.strategies import MarketSnapshot, SettlementAverageModel, edge_after_fee
-from kms.strategies.settlement_average import normal_cdf, prob_average_at_or_above as p_above
+from kms.strategies.settlement_average import normal_cdf
+from kms.strategies.settlement_average import prob_average_at_or_above as p_above
 
 
 def test_model_limits():

@@ -12,7 +12,8 @@ license = { text = "MIT (code), CC BY 4.0 (docs)" }
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=8"]
+dev = ["pytest>=8", "ruff>=0.6"]
+examples = ["matplotlib>=3.8"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -20,3 +21,10 @@ where = ["src"]
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]

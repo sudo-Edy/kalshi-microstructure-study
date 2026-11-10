@@ -6,7 +6,23 @@
 > This repository documents the research design, pre-registrations and findings, with tested reference
 > implementations of the core components. The full trading system is private.
 
-![tests](https://github.com/sudo-Edy/kalshi-microstructure-study/actions/workflows/tests.yml/badge.svg)
+![tests](https://github.com/sudo-Edy/kalshi-microstructure-study/actions/workflows/tests.yml/badge.svg) ![python](https://img.shields.io/badge/python-3.10%20%7C%203.12-blue) ![license](https://img.shields.io/badge/license-MIT%20%2F%20CC%20BY%204.0-lightgrey)
+
+## Highlights
+
+- **Built and ran a live trading-research stack**: streaming order books, latency monitoring, a simulated exchange
+  that fills against the *real* live book, and safety gates on every order path.
+- **Caught a fake +15% edge.** Traced it to a 9-second data-feed lag caused by CPU throttling, corrected the
+  published numbers, and built monitoring so it can't recur silently. A runnable synthetic demo reproduces the mechanism (below).
+- **Pre-registered every forward test**: rules, sample size and pass/fail written before any data, then enforced in code.
+- **Benchmarked forecasters against the market**, including a large language model; reported that none beat the crowd.
+- **Honest statistics**: cluster-resampled confidence intervals, because correlated bets make naive intervals far too narrow.
+
+![Latency artifact demo](docs/figures/latency_artifact.png)
+
+*Synthetic data. A forecaster with zero real edge shows +10–13% paper returns once the recorded order book lags by
+5–24 seconds; the same signals executed on the true book lose money. Reproduce with
+`python examples/latency_artifact.py`.*
 
 ---
 
@@ -69,7 +85,8 @@ src/kms/
   simulator/   binary order book and conservative taker-fill simulation with fee rounding
   strategies/  strategy interface and the pre-registered settlement-average model
   evaluation/  cluster-resampled ROI and Brier statistics; pre-registered verdicts as code
-tests/                      pytest suite (runs in CI)
+tests/                      pytest suite (runs in CI with lint and a demo smoke test)
+examples/                   latency_artifact.py: synthetic reproduction of the fake-edge mechanism
 analysis/                   planned analyses and figures
 data/                       data policy (no market data is redistributed)
 ```
@@ -77,8 +94,9 @@ data/                       data policy (no market data is redistributed)
 ## Quick start
 
 ```bash
-pip install -e ".[dev]"
-pytest -q
+pip install -e ".[dev,examples]"
+ruff check . && pytest -q
+python examples/latency_artifact.py   # regenerates docs/figures/latency_artifact.png
 ```
 
 ```python

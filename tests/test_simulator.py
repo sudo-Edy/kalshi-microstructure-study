@@ -12,7 +12,7 @@ def book():
 
 
 def test_asks_derived_from_opposite_bids(book):
-    assert [(l.price, l.size) for l in book.asks("YES")] == [(0.80, 4), (0.81, 100)]
+    assert [(lvl.price, lvl.size) for lvl in book.asks("YES")] == [(0.80, 4), (0.81, 100)]
     assert book.best_ask("NO").price == 0.22
     assert book.mid() == pytest.approx(0.79)
 

@@ -6,8 +6,9 @@ asks are derived from the NO bids, and vice versa.
 """
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Iterable, List, Literal, Optional, Tuple
+from typing import Literal
 
 Side = Literal["YES", "NO"]
 
@@ -18,7 +19,7 @@ class Level:
     size: float   # contracts
 
 
-def _levels(raw: Iterable[Tuple[float, float]]) -> List[Level]:
+def _levels(raw: Iterable[tuple[float, float]]) -> list[Level]:
     out = []
     for price, size in raw:
         p = float(price)
@@ -30,27 +31,27 @@ def _levels(raw: Iterable[Tuple[float, float]]) -> List[Level]:
 
 @dataclass
 class OrderBook:
-    yes_bids: List[Level] = field(default_factory=list)
-    no_bids: List[Level] = field(default_factory=list)
+    yes_bids: list[Level] = field(default_factory=list)
+    no_bids: list[Level] = field(default_factory=list)
 
     @classmethod
-    def from_bids(cls, yes: Iterable[Tuple[float, float]], no: Iterable[Tuple[float, float]]) -> "OrderBook":
+    def from_bids(cls, yes: Iterable[tuple[float, float]], no: Iterable[tuple[float, float]]) -> OrderBook:
         return cls(_levels(yes), _levels(no))
 
-    def asks(self, side: Side) -> List[Level]:
+    def asks(self, side: Side) -> list[Level]:
         """Ask levels for buying `side`, cheapest first."""
         other = self.no_bids if side == "YES" else self.yes_bids
-        return sorted((Level(round(1 - l.price, 4), l.size) for l in other), key=lambda l: l.price)
+        return sorted((Level(round(1 - lvl.price, 4), lvl.size) for lvl in other), key=lambda lvl: lvl.price)
 
-    def best_bid(self, side: Side) -> Optional[Level]:
+    def best_bid(self, side: Side) -> Level | None:
         bids = self.yes_bids if side == "YES" else self.no_bids
-        return max(bids, key=lambda l: l.price) if bids else None
+        return max(bids, key=lambda lvl: lvl.price) if bids else None
 
-    def best_ask(self, side: Side) -> Optional[Level]:
+    def best_ask(self, side: Side) -> Level | None:
         a = self.asks(side)
         return a[0] if a else None
 
-    def mid(self) -> Optional[float]:
+    def mid(self) -> float | None:
         """Market-implied probability of YES, the baseline forecaster in the study."""
         bid, ask = self.best_bid("YES"), self.best_ask("YES")
         if bid is None or ask is None:

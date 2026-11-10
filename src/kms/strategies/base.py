@@ -7,7 +7,6 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional, Tuple
 
 from ..simulator.book import OrderBook, Side
 from ..simulator.fills import TAKER_FEE_RATE
@@ -38,15 +37,15 @@ def edge_after_fee(probability: float, ask: float, fee_rate: float = TAKER_FEE_R
 class Strategy(ABC):
     name: str = "strategy"
 
-    def __init__(self, min_edge: float = 0.03, price_band: Tuple[float, float] = (0.03, 0.97)):
+    def __init__(self, min_edge: float = 0.03, price_band: tuple[float, float] = (0.03, 0.97)):
         self.min_edge = min_edge
         self.price_band = price_band
 
     @abstractmethod
-    def probability_yes(self, snap: MarketSnapshot) -> Optional[float]:
+    def probability_yes(self, snap: MarketSnapshot) -> float | None:
         """P(contract settles YES), or None when the model has no opinion."""
 
-    def signal(self, snap: MarketSnapshot) -> Optional[Signal]:
+    def signal(self, snap: MarketSnapshot) -> Signal | None:
         p = self.probability_yes(snap)
         if p is None:
             return None

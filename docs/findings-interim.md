@@ -42,7 +42,8 @@ never recorded, while every health check reported normal operation. Causes:
 Re-priced on the book as it actually stood, the "edge" was approximately **0%**. Remediation included continuous lag
 measurement against exchange timestamps, a freshness gate on all orders, rate-limited re-pricing and a vectorized
 training step. **Lesson:** a positive backtest on stale data is indistinguishable from a real edge unless data
-timeliness is measured directly.
+timeliness is measured directly. A synthetic reproduction of the mechanism is in
+[`examples/latency_artifact.py`](../examples/latency_artifact.py).
 
 ## 5. Pre-registered tests in progress
 | Test | Filed | Deadline | Status |

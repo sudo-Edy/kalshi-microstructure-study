@@ -12,7 +12,6 @@ fat-tail allowance. Before the averaging window opens, the walk also runs for th
 from __future__ import annotations
 
 import math
-from typing import Optional
 
 from .base import MarketSnapshot, Strategy
 
@@ -44,13 +43,13 @@ class SettlementAverageModel(Strategy):
         super().__init__(**kw)
         self.sigma_per_s = sigma_per_s
         self.tail = tail
-        self.fixed_mean: Optional[float] = None
+        self.fixed_mean: float | None = None
         self.n_fixed: int = 0
 
-    def update_average(self, fixed_mean: Optional[float], n_fixed: int) -> None:
+    def update_average(self, fixed_mean: float | None, n_fixed: int) -> None:
         self.fixed_mean, self.n_fixed = fixed_mean, n_fixed
 
-    def probability_yes(self, snap: MarketSnapshot) -> Optional[float]:
+    def probability_yes(self, snap: MarketSnapshot) -> float | None:
         if snap.seconds_to_close <= 0:
             return None
         in_window = snap.seconds_to_close <= WINDOW_S and self.n_fixed > 0 and self.fixed_mean is not None

@@ -6,8 +6,8 @@ per-bet confidence intervals are far too narrow. All intervals here resample who
 from __future__ import annotations
 
 import random
+from collections.abc import Hashable, Mapping, Sequence
 from dataclasses import dataclass
-from typing import Dict, Hashable, List, Mapping, Sequence, Tuple
 
 
 @dataclass(frozen=True)
@@ -24,15 +24,15 @@ def roi(bets: Sequence[Bet]) -> float:
     return (sum(b.payout for b in bets) - cost) / cost
 
 
-def _clusters(items, key) -> Dict[Hashable, list]:
-    out: Dict[Hashable, list] = {}
+def _clusters(items, key) -> dict[Hashable, list]:
+    out: dict[Hashable, list] = {}
     for it in items:
         out.setdefault(key(it), []).append(it)
     return out
 
 
 def resampled_roi(bets: Sequence[Bet], n_boot: int = 2000, level: float = 0.90,
-                  seed: int = 0) -> Tuple[float, float, float]:
+                  seed: int = 0) -> tuple[float, float, float]:
     """(point ROI, lower, upper) with whole clusters resampled with replacement."""
     groups = list(_clusters(bets, lambda b: b.cluster).values())
     rng = random.Random(seed)
@@ -49,17 +49,17 @@ def resampled_roi(bets: Sequence[Bet], n_boot: int = 2000, level: float = 0.90,
 def brier(probs: Sequence[float], outcomes: Sequence[int]) -> float:
     if len(probs) != len(outcomes) or not probs:
         raise ValueError("need equal, non-empty sequences")
-    return sum((p - y) ** 2 for p, y in zip(probs, outcomes)) / len(probs)
+    return sum((p - y) ** 2 for p, y in zip(probs, outcomes, strict=True)) / len(probs)
 
 
 def brier_difference_interval(model: Mapping[str, float], baseline: Mapping[str, float], outcomes: Mapping[str, int],
                               cluster_of: Mapping[str, Hashable], n_boot: int = 1000, level: float = 0.90,
-                              seed: int = 0) -> Tuple[float, float, float]:
+                              seed: int = 0) -> tuple[float, float, float]:
     """Brier(model) - Brier(baseline) with a cluster-resampled interval. Negative = model better than baseline."""
     ids = [i for i in outcomes if i in model and i in baseline]
     groups = list(_clusters(ids, lambda i: cluster_of[i]).values())
 
-    def diff(sample: List[str]) -> float:
+    def diff(sample: list[str]) -> float:
         y = [outcomes[i] for i in sample]
         return brier([model[i] for i in sample], y) - brier([baseline[i] for i in sample], y)
 

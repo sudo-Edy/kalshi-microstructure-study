@@ -5,10 +5,10 @@ function is pure: same bets and time in, same verdict out.
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Sequence
 
 from .stats import Bet, resampled_roi
 
