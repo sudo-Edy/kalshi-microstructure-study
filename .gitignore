@@ -1,0 +1,11 @@
+# never commit credentials or market data
+*.pem
+*.key
+.env*
+*key_id*
+data/*
+!data/README.md
+*.csv
+*.jsonl
+*.gz
+__pycache__/

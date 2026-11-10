@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you reference this study, please cite it as below."
+title: "Retail-Scale Algorithmic Trading on Event-Contract Markets: Edge, Latency and Evaluation Integrity on Kalshi Crypto Contracts"
+type: report
+authors:
+  - name: "Edy"
+date-released: 2026-11-10
+status: preprint
+keywords: [prediction markets, market microstructure, pre-registration, backtesting, latency, forecasting]
