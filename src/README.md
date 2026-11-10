@@ -20,7 +20,7 @@ The outline below describes the full system so the methodology can be understood
                               evaluation/  ── pre-registered scoring, resampled intervals, health alarms
 ```
 
-| Folder | Responsibility |
+| Folder | Role in the full (private) system; this repo holds the generic parts |
 |---|---|
 | `kms/feed/` | Websocket client, order-book reconstruction, exchange-timestamp lag measurement, watchdog reconnects |
 | `kms/simulator/` | Hypothetical account against the live book: taker fills limited to displayed depth after a round-trip delay; resting orders queue behind displayed size and fill only on real trades; settlement on official results |
