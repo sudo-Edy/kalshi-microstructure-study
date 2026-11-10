@@ -1,7 +1,8 @@
-# Architecture (implementation withheld)
+# Architecture
 
-The source code is not published. This outline describes the components so the methodology can be understood and,
-in principle, reimplemented.
+The full trading system is private. `kms/` contains clean reference implementations of its generic components
+(latency monitoring, freshness gate, order book, fill simulation, the pre-registered model, evaluation statistics).
+The outline below describes the full system so the methodology can be understood and, in principle, reimplemented.
 
 ```
              exchange websocket ──► feed/  ──► latency monitor (p50/p90 lag, reconnects, stalls)
@@ -21,7 +22,7 @@ in principle, reimplemented.
 
 | Folder | Responsibility |
 |---|---|
-| `feed/` | Websocket client, order-book reconstruction, exchange-timestamp lag measurement, watchdog reconnects |
-| `simulator/` | Hypothetical account against the live book: taker fills limited to displayed depth after a round-trip delay; resting orders queue behind displayed size and fill only on real trades; settlement on official results |
-| `strategies/` | Probability models (volatility, settlement-average), quoting rules, ladder scanner |
-| `evaluation/` | Scoring scripts for each pre-registration, Brier comparisons, slot-resampled confidence intervals, health checks |
+| `kms/feed/` | Websocket client, order-book reconstruction, exchange-timestamp lag measurement, watchdog reconnects |
+| `kms/simulator/` | Hypothetical account against the live book: taker fills limited to displayed depth after a round-trip delay; resting orders queue behind displayed size and fill only on real trades; settlement on official results |
+| `kms/strategies/` | Probability models (volatility, settlement-average), quoting rules, ladder scanner |
+| `kms/evaluation/` | Scoring scripts for each pre-registration, Brier comparisons, slot-resampled confidence intervals, health checks |

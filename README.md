@@ -3,7 +3,10 @@
 **An empirical study of edge, latency and evaluation integrity on Kalshi's short-horizon crypto contracts**
 
 > Status: **ongoing** (started October 2026). Two pre-registered forward tests are running; verdicts due 2026-11-23.
-> This repository documents the research design, pre-registrations and findings. The implementation is not published.
+> This repository documents the research design, pre-registrations and findings, with tested reference
+> implementations of the core components. The full trading system is private.
+
+![tests](https://github.com/sudo-Edy/kalshi-microstructure-study/actions/workflows/tests.yml/badge.svg)
 
 ---
 
@@ -61,15 +64,39 @@ docs/
   lab-notebook.md           dated log of key events and corrections
   limitations-and-ethics.md scope, threats to validity, responsible-use notes
   preregistration/          frozen forward-test protocols (unedited after filing)
-src/                        architecture outline only (implementation withheld)
+src/kms/
+  feed/        lag monitor (exchange-timestamp latency) and fail-closed freshness gate
+  simulator/   binary order book and conservative taker-fill simulation with fee rounding
+  strategies/  strategy interface and the pre-registered settlement-average model
+  evaluation/  cluster-resampled ROI and Brier statistics; pre-registered verdicts as code
+tests/                      pytest suite (runs in CI)
 analysis/                   planned analyses and figures
-tests/                      testing philosophy
 data/                       data policy (no market data is redistributed)
+```
+
+## Quick start
+
+```bash
+pip install -e ".[dev]"
+pytest -q
+```
+
+```python
+from kms.simulator import OrderBook, simulate_taker_fill
+from kms.strategies import MarketSnapshot, SettlementAverageModel
+
+book = OrderBook.from_bids(yes=[(0.78, 50)], no=[(0.20, 50)])     # YES ask = 0.80
+model = SettlementAverageModel(sigma_per_s=0.005)
+model.update_average(fixed_mean=100.4, n_fixed=30)                 # 30 of 60 settlement seconds fixed
+signal = model.signal(MarketSnapshot("DEMO", strike=100.0, seconds_to_close=30, spot=100.5, book=book))
+fill = simulate_taker_fill(book, signal.side, limit=signal.ask + 0.01, contracts=10)
+print(signal, fill.cost)
 ```
 
 ## What is intentionally not here
 
-- **Source code.** Withheld. [src/README.md](src/README.md) describes the architecture.
+- **The full trading system.** Private. `src/kms` holds clean, tested reference implementations of the generic
+  components; [src/README.md](src/README.md) describes the full architecture.
 - **Market data.** Exchange data is not redistributed. See [data/README.md](data/README.md).
 - **Credentials or account details.** None are stored in this repository.
 
